@@ -37,6 +37,7 @@ using namespace std;
 #define nnc        *(i + 2)
 #define pc          lastChar
 #define NULLCHAR    (char)NULL
+#define pczin      *(i - 1)
 
 bool is(string x, char c) {
   return (c != NULLCHAR && x.find_first_of(c) != std::string::npos);
@@ -237,6 +238,313 @@ string metaphone_single(string x, int maxCodeLen, bool traditional) {
   return meta;
 }
 
+string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
+  string alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+  string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
+  string soft = "AOU";
+  string softer = "EI";
+  string ptc = "PTC";
+  string vowels = "AEIOU";
+
+  string::iterator i;
+  string word = x.substr(), meta = "";
+  char lastChar = NULLCHAR;
+
+  trim(word);
+  to_upper(word);
+
+  /*
+  * First, we will handle a few special cases.  The Metaphone of the
+  * null string is, itself, the null string.  The Metaphone of a
+  * single character is itself, capitalized, as appropriate.
+  */
+  for(i = word.begin(); i != word.end() && !isalpha(*i); i++);
+
+  if(i == word.end())
+    return "";
+  if(word.length() == 1)
+    return(word);
+
+  while(meta.length() < maxCodeLen && i != word.end()){
+
+    if(!is(alpha, cc)){
+      i += 1;
+    }
+
+    //while(meta.length() < word.end()){
+    // vogais ficam apenas no inicio das palavras
+    if(is(vowels, cc)){
+      if(i == word.begin() || (pczin == ' ')){
+        meta += cc;
+        i += 1;
+      } else {
+        i+=1;
+      }
+    }
+
+    switch (cc) {
+    case ' ':
+      meta += ' ';
+      i += 1;
+      break;
+    case 'B':
+    case 'D':
+    case 'F':
+    case 'J':
+    case 'K':
+    case 'M':
+    case 'V':
+      meta += cc;
+      i+=1;
+      break;
+    case 'C':
+      if(is(soft, nc)){
+        meta += 'K';
+        i += 1;
+      } else {
+        if(is(softer,nc)){
+          meta += 'S';
+          i += 1;
+        } else {
+          if(nc == 'H' && nnc == 'R'){
+            meta += 'K';
+            i += 3;
+          } else {
+            if(nc == 'H'){
+              meta += 'X';
+              i += 2;
+            } else {
+              if(i == word.end() || nc == ' '){
+                meta += 'K';
+                i += 1;
+              } else {
+                meta += 'K';
+                i += 1;
+              }
+            }
+          }
+        }
+      }
+      break;
+      // case 'Ç':
+      //   meta += 'S';
+      //   i += 1;
+      //   break;
+    case 'G':
+      if(is(soft,nc)){
+        meta += 'G';
+        i += 1;
+      } else {
+        if(is(softer,nc)){
+          meta += 'J';
+          i += 1;
+        } else {
+          if(nc == 'H' && is(softer, nnc)){
+            meta += 'J';
+            i += 2;
+          } else {
+            if(nc == 'H' && is(consonants, nnc)){
+              meta += 'G';
+              i += 2;
+            } else {
+              i += 1;
+            }
+          }
+        }
+      }
+      break;
+    case 'H':
+      if((i == word.begin() && is(vowels, nc)) || (pczin == ' ' && is(vowels, nc))){
+        meta += nc;
+        i += 1;
+      } else {
+        meta += '0';
+        i += 1;
+      }
+      break;
+    case 'L':
+      if(nc == 'H'){
+        meta += '1';
+        i += 2;
+      } else {
+        if(is(vowels, nc)){
+          meta += 'L';
+          i += 1;
+        } else {
+          meta += 'L';
+          i += 1;
+        }
+      }
+      break;
+    case 'N':
+      if(i == word.end() || nc == ' '){
+        meta += 'M';
+        i += 1;
+      } else {
+        if(nc == 'H'){
+          meta += '3';
+          i += 2;
+        } else {
+          meta += 'N';
+          i += 1;
+        }
+      }
+      break;
+    case 'P':
+      if(nc == 'H'){
+        meta += 'F';
+        i += 2;
+      } else {
+        meta += 'P';
+        i += 1;
+      }
+      break;
+    case 'Q':
+      meta += 'K';
+      i += 1;
+      break;
+    case 'R':
+      if(i == word.begin() || pczin == ' '){
+        meta += '2';
+        i += 1;
+      } else {
+        if(nc == ' '){
+          meta += '2';
+          i += 1;
+        } else {
+          if(nc == 'R'){
+            meta += '2';
+            i += 2;
+          } else {
+            if(is(vowels,pczin) && is(vowels,nc)){
+              meta += 'R';
+              i += 1;
+            } else {
+              if((i != word.begin() && is(consonants,nc)) || (pczin == ' ' && is(consonants, nc))){
+                meta += 'R';
+                i += 1;
+              } else {
+                if(is(consonants, pczin) && is(vowels, nc)){
+                  meta += 'R';
+                  i += 1;
+                } else {
+                  meta += 'R';
+                  i += 1;
+                }
+              }
+            }
+          }
+        }
+      }
+      break;
+    case 'S':
+      if(nc == 'S'){
+        meta += 'S';
+        i += 2;
+      } else {
+        if(nc == 'H'){
+          meta += 'X';
+          i += 2;
+        } else {
+          if(nc == 'C' && is(softer, nnc)){
+            meta += 'S';
+            i += 2;
+          } else {
+            if(nc == 'C' && is(soft, nnc)){
+              meta += 'S';
+              meta += 'C';
+              i += 2;
+            } else {
+              if(nc == 'C' && nnc == 'H'){
+                meta += 'X';
+                i += 3;
+              } else {
+                meta += 'S';
+                i += 1;
+              }
+            }
+          }
+        }
+      }
+      break;
+    case 'T':
+      if(nc == 'H'){
+        meta += 'T';
+        i += 2;
+      } else {
+        meta += 'T';
+        i += 1;
+      }
+      break;
+    case 'W':
+      if(nc == 'L' && is(vowels, nnc)){
+        meta += 'V';
+        i += 1;
+      } else {
+        if(nc == 'R' && is(vowels, nnc)){
+          meta += 'V';
+          i += 1;
+        } else {
+          if(is(consonants, nc)){
+            meta += '0';
+            i += 1;
+          } else {
+            i += 1;
+          }
+        }
+      }
+      break;
+    case 'X':
+      if(i == word.end() || pczin == ' '){
+        meta += 'X';
+        i += 1;
+      } else {
+        if(pczin == 'E' && is(softer, nc)){
+          meta += 'X';
+          i += 1;
+        } else {
+          if(pczin == 'E' && is(soft, nc)){
+            meta += 'K';
+            meta += 'S';
+            i += 1;
+          } else {
+            if(pczin == 'E' && is(ptc, nc)){
+              meta += 'S';
+              i += 1;
+            } else {
+              if((pczin == 'E' && i != word.end()) || (pczin == 'E' && nc == ' ')){
+                meta += 'K';
+                meta += 'S';
+                i += 1;
+              } else {
+                meta += 'X';
+                i += 1;
+              }
+            }
+          }
+        }
+      }
+      break;
+    case 'Y':
+      meta += 'I';
+      i += 1;
+      break;
+    case 'Z':
+      if(i == word.end() || nc == ' '){
+        meta += 'S';
+        i + 1;
+      } else {
+        meta += 'Z';
+        i += 1;
+      }
+      break;
+
+    }
+  }
+
+  return meta;
+}
+
 //' @rdname metaphone
 //' @name metaphone
 //' @title Generate phonetic versions of strings with Metaphone
@@ -274,7 +582,7 @@ string metaphone_single(string x, int maxCodeLen, bool traditional) {
 //' @importFrom Rcpp evalCpp
 //' @export
 //[[Rcpp::export]]
-CharacterVector metaphone(CharacterVector word, int maxCodeLen = 10) {
+CharacterVector metaphone(CharacterVector word, int maxCodeLen = 10, std::string language = "us") {
 
   unsigned int input_size = word.size();
   CharacterVector res(input_size);
@@ -286,7 +594,11 @@ CharacterVector metaphone(CharacterVector word, int maxCodeLen = 10) {
     if(word[i] == NA_STRING){
       res[i] = NA_STRING;
     } else {
-      res[i] = metaphone_single(Rcpp::as<std::string>(word[i]), maxCodeLen, true);
+      if(language == "pt-br"){
+        res[i] = metaphone_single_br(Rcpp::as<std::string>(word[i]), maxCodeLen, true);
+      } else {
+        res[i] = metaphone_single(Rcpp::as<std::string>(word[i]), maxCodeLen, true);
+      }
     }
 
   }
