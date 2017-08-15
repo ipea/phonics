@@ -262,7 +262,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
   if(word.length() == 1)
     return(word);
 
-  // Loop principal
+  // Loop principal função pt-br
   while(meta.length() < maxCodeLen && i != word.end()){
 
     // Exclui caracteres estranhos
