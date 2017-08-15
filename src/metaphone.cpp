@@ -239,26 +239,22 @@ string metaphone_single(string x, int maxCodeLen, bool traditional) {
 }
 
 string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
+
+  //Inicia constantes utilizadas
   string alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
-  string space = " ";
   string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
   string soft = "AOU";
   string softer = "EI";
   string ptc = "PTC";
   string vowels = "AEIOU";
 
+  //Inicia Iterador, word e faz tratamentos
   string::iterator i;
   string word = x.substr(), meta = "";
   char lastChar = NULLCHAR;
-
   trim(word);
   to_upper(word);
 
-  /*
-  * First, we will handle a few special cases.  The Metaphone of the
-  * null string is, itself, the null string.  The Metaphone of a
-  * single character is itself, capitalized, as appropriate.
-  */
   for(i = word.begin(); i != word.end() && !isalpha(*i); i++);
 
   if(i == word.end())
@@ -266,8 +262,10 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
   if(word.length() == 1)
     return(word);
 
+  // Loop principal
   while(meta.length() < maxCodeLen && i != word.end()){
 
+    // Exclui caracteres estranhos
     if(!is(alpha, cc)){
       i += 1;
     }
@@ -326,10 +324,10 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
         }
       }
       break;
-      // case 'Ç':
-      //   meta += 'S';
-      //   i += 1;
-      //   break;
+    //case 'Ç':
+    //  meta += 'S';
+    //  i += 1;
+    //  break;
     case 'G':
       if(is(soft,nc)){
         meta += 'G';
