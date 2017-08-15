@@ -536,7 +536,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
     case 'Z':
       if(!is(alpha, nc) || nc == ' '){
         meta += 'S';
-        i + 1;
+        i += 1;
       } else {
         meta += 'Z';
         i += 1;
