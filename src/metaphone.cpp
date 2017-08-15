@@ -240,6 +240,7 @@ string metaphone_single(string x, int maxCodeLen, bool traditional) {
 
 string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
   string alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+  string space = " ";
   string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
   string soft = "AOU";
   string softer = "EI";
@@ -271,7 +272,6 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       i += 1;
     }
 
-    //while(meta.length() < word.end()){
     // vogais ficam apenas no inicio das palavras
     if(is(vowels, cc)){
       if(i == word.begin() || (pczin == ' ')){
@@ -314,7 +314,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
               meta += 'X';
               i += 2;
             } else {
-              if(i == word.end() || nc == ' '){
+              if(!is(alpha, nc) || nc == ' '){
                 meta += 'K';
                 i += 1;
               } else {
@@ -377,7 +377,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'N':
-      if(i == word.end() || nc == ' '){
+      if(!is(alpha, nc) || nc == ' '){
         meta += 'M';
         i += 1;
       } else {
@@ -408,7 +408,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
         meta += '2';
         i += 1;
       } else {
-        if(nc == ' '){
+        if(nc == ' ' || !is(alpha, nc)){
           meta += '2';
           i += 1;
         } else {
@@ -495,7 +495,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'X':
-      if(i == word.end() || pczin == ' '){
+      if(!is(alpha, pczin) || pczin == ' '){
         meta += 'X';
         i += 1;
       } else {
@@ -534,7 +534,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'Z':
-      if(i == word.end() || nc == ' '){
+      if(!is(alpha, nc) || nc == ' '){
         meta += 'S';
         i + 1;
       } else {
