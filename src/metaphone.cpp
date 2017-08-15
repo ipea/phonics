@@ -512,7 +512,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
               meta += 'S';
               i += 1;
             } else {
-              if((pczin == 'E' && i != word.end()) || (pczin == 'E' && nc == ' ')){
+              if(pczin == 'E' && is(alpha, nc) && nc != ' '){
                 meta += 'K';
                 meta += 'S';
                 i += 1;
