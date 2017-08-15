@@ -526,8 +526,12 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'Y':
-      meta += 'I';
-      i += 1;
+      if(i == word.begin() || pczin == ' '){
+        meta += 'I';
+        i += 1;
+      } else {
+        i += 1;
+      }
       break;
     case 'Z':
       if(i == word.end() || nc == ' '){
