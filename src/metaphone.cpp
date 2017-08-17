@@ -247,6 +247,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
   string softer = "EI";
   string ptc = "PTC";
   string vowels = "AEIOU";
+  string RS = "RS";
 
   //Inicia Iterador, word e faz tratamentos
   string::iterator i;
@@ -265,10 +266,23 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
   // Loop principal função pt-br
   while(meta.length() < maxCodeLen && i != word.end()){
 
+    //std::cout << cc << nc << pczin << std::endl;
+
     // Exclui caracteres estranhos
     if(!is(alpha, cc)){
       i += 1;
     }
+
+    //adiciona regra: Retirar letras repetidas que nao sejam SS e RR:
+    if(nc == cc && !is(RS,cc) && is(consonants, cc)){
+      //std::cout << 'Caiu';
+      i += 1;
+    }
+
+    //if( is(vowels, cc) ){
+    //  cout << "Caiu vogal";
+    //}
+
 
     // vogais ficam apenas no inicio das palavras
     if(is(vowels, cc)){
@@ -436,29 +450,37 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'S':
-      if(nc == 'S'){
-        meta += 'S';
-        i += 2;
-      } else {
-        if(nc == 'H'){
-          meta += 'X';
+      //std::cout << pczin << nc << std::endl;
+      //std::cout << "cu";
+      if( is(vowels,pczin) && is(vowels,nc) ){
+        //std::cout << 'caiu';
+        meta += 'Z';
+        i += 1;
+      } else{
+        if(nc == 'S'){
+          meta += 'S';
           i += 2;
         } else {
-          if(nc == 'C' && is(softer, nnc)){
-            meta += 'S';
+          if(nc == 'H'){
+            meta += 'X';
             i += 2;
           } else {
-            if(nc == 'C' && is(soft, nnc)){
+            if(nc == 'C' && is(softer, nnc)){
               meta += 'S';
-              meta += 'C';
               i += 2;
             } else {
-              if(nc == 'C' && nnc == 'H'){
-                meta += 'X';
-                i += 3;
-              } else {
+              if(nc == 'C' && is(soft, nnc)){
                 meta += 'S';
-                i += 1;
+                meta += 'C';
+                i += 2;
+              } else {
+                if(nc == 'C' && nnc == 'H'){
+                  meta += 'X';
+                  i += 3;
+                } else {
+                  meta += 'S';
+                  i += 1;
+                }
               }
             }
           }
