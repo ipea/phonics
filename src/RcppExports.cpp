@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// caixa
+CharacterVector caixa(CharacterVector word, int maxCodeLen);
+RcppExport SEXP _phonics_caixa(SEXP wordSEXP, SEXP maxCodeLenSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< CharacterVector >::type word(wordSEXP);
+    Rcpp::traits::input_parameter< int >::type maxCodeLen(maxCodeLenSEXP);
+    rcpp_result_gen = Rcpp::wrap(caixa(word, maxCodeLen));
+    return rcpp_result_gen;
+END_RCPP
+}
 // metaphone
 CharacterVector metaphone(CharacterVector word, int maxCodeLen, std::string language);
 RcppExport SEXP _phonics_metaphone(SEXP wordSEXP, SEXP maxCodeLenSEXP, SEXP languageSEXP) {
@@ -44,6 +56,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_phonics_caixa", (DL_FUNC) &_phonics_caixa, 2},
     {"_phonics_metaphone", (DL_FUNC) &_phonics_metaphone, 3},
     {"_phonics_soundex", (DL_FUNC) &_phonics_soundex, 2},
     {"_phonics_refinedSoundex", (DL_FUNC) &_phonics_refinedSoundex, 2},
