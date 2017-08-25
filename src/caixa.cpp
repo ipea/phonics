@@ -13,7 +13,7 @@ using namespace std;
 #define cc         *i
 #define nc         *(i + 1)
 #define nnc        *(i + 2)
-//#define pc          lastChar
+#define pc          lastChar
 #define NULLCHAR    (char)NULL
 #define pc      *(i - 1)
 
