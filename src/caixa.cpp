@@ -13,16 +13,15 @@ using namespace Rcpp;
 using namespace boost;
 using namespace std;
 
-//bla
-#define cc         *i
-#define nc         *(i + 1)
-#define nnc        *(i + 2)
+#define cc         *t
+#define nc         *(t + 1)
+#define nnc        *(t + 2)
 //#define pc          lastChar
 #define NULLCHAR    (char)NULL
-#define pc      *(i - 1)
+#define pc         *(t - 1)
 
 
-// // Define métodos utilizados
+// Define métodos utilizados
 bool is(std::string x, char c) {
   return (c != NULLCHAR && x.find_first_of(c) != std::string::npos);
 }
@@ -36,6 +35,10 @@ bool is(std::string x, char c) {
 //   }
 // }
 
+string att(std::string x, int *t){
+  //charact = x[t];
+}
+
 string substr(std::string x, int i, int n) {
 
   try {
@@ -48,6 +51,15 @@ string substr(std::string x, int i, int n) {
 
 string caixa_single(string x, int maxCodeLen, bool traditional){
 
+  //Inicia indicadores de posição e variaveis
+  // char cc;
+  // char nc;
+  // char nnc;
+  // char pc;
+  string word = "";
+  string meta = "";
+  string::iterator t;
+
   //Inicia constantes utilizadas
   string alpha = "ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
   string consonants = "BCDFGHJKLMNPQRSTVWXYZ";
@@ -56,78 +68,64 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   string ptc = "PTC";
   string vowels = "AEIOUY";
   string RS = "RS";
-  string teste = "IGOR";
-  std::cout << "tipo teste : " << typeid(teste).name() <<  std::endl;
-  teste.at(1);
 
-  //Inicia Iterador, word e faz tratamentos
-  string::iterator i;
+  //Faz tratamentos
+  int i = 0;
   string pre_word = x.substr();
   boost::trim(pre_word);
   boost::to_upper(pre_word);
-  char lastChar = NULLCHAR;
-  string word = "";
-  string meta = "";
 
-  //inicia i em pre_word
-  for(i = pre_word.begin(); i != pre_word.end() && !isalpha(*i); i++);
+  for(t = pre_word.begin(); t != pre_word.end() && !isalpha(*t); t++);
 
   //Corre todas as letras e retira itens estranhos
-  while(word.length() < maxCodeLen && i != pre_word.end()){
+  while(word.length() < maxCodeLen && word.length() < pre_word.length()){
+    //cc = pre_word[i];
     if(is(alpha, cc)){
       word += cc;
-      i += 1;
+      t += 1;
     } else {
-      i += 1;
+      t += 1;
     }
   }
 
-  //inicia i em word
-  for(i = word.begin(); i != word.end() && !isalpha(*i); i++);
+  for(t = word.begin(); t != word.end() && !isalpha(*t); t++);
 
+  //std:cout << word.end();
   //Inicia sequenca de loops para cada regra
   /* 1 Regra: Tratamento para consoantes
    * Retira letras repetidas, que não forem dígrafos (RR e SS)
    */
-  while(meta.length() < maxCodeLen && i != word.end()){
+  while(t != word.end()){
+    //cc = word[i]; nc = word[i+1];
+    //cout << "entrou " << cc << " ";
     if(nc == cc && cc != 'S' && cc != 'R'){
-      i += 1;
+      t += 1;
     } else {
-      meta += cc;
-      i += 1;
-    }
-  }
-  std::cout << "cc: " << cc << std::endl;
-  std::cout << "pc: " << pc << std::endl;
-  i = word.begin();
-
-  // 2 Regra: Letra S entre vogais (inclusive Y), troca por Z
-  i = word.begin();
-  while(i != word.end()){
-    if( cc == 'S' && is(vowels,pc) && is(vowels,nc) ){
-      std::cout << "caiu S" << std::endl;
-      //meta += 'Z';
-      //at(meta,i) == 'Z';
-      //meta[i] == 'Z';
-      //std::cuot << meta.at(i);
-      //char at(string x, int i)
-      //at(meta,i) == 'Z';
-      //meta.replace(cc,'Z');
-      //word.at(i);
-      meta.replace(i,1,"Z");
-
-      i += 1;
-    } else {
-      i += 1;
+      cout << *t;
+      //word.at(*t) = "";
+      t += 1;
     }
   }
 
-
-
-  std::cout << "tipo: " << typeid(meta).name() <<  std::endl;
-  //std::cout << "pre_word: " << pre_word << std::endl;
-  //std::cout << "word: " << word <<  std::endl;
-  //std::cout << "meta: " << meta <<  std::endl;
+  // // 2 Regra: Letra S entre vogais (inclusive Y), troca por Z
+  // while(i != word.end()){
+  //   if( cc == 'S' && is(vowels,pc) && is(vowels,nc) ){
+  //     std::cout << "caiu S" << std::endl;
+  //     //meta += 'Z';
+  //     //at(meta,i) == 'Z';
+  //     //meta[i] == 'Z';
+  //     //std::cuot << meta.at(i);
+  //     //char at(string x, int i)
+  //     //at(meta,i) == 'Z';
+  //     //meta.replace(cc,'Z');
+  //     //word.at(i);
+  //     meta.replace(i,1,"Z");
+  //
+  //     i += 1;
+  //   } else {
+  //     i += 1;
+  //   }
+  // }
 
   // /Users/Igor/OneDrive/Documents/IPEA/git/phonics/src/caixa.cpp
   /* A dinamica aqui é diferente da do metaphone, o desafio aqui é criar
@@ -140,7 +138,7 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   //while
 
 
-  return meta;
+  return word;
 }
 
 
