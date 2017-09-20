@@ -35,8 +35,9 @@ bool is(std::string x, char c) {
 //   }
 // }
 
-string att(std::string x, int *t){
-  //charact = x[t];
+string att(std::string x, int *t, char n){
+  x[*t] = n;
+  return x;
 }
 
 string substr(std::string x, int i, int n) {
@@ -51,6 +52,7 @@ string substr(std::string x, int i, int n) {
 
 string caixa_single(string x, int maxCodeLen, bool traditional){
 
+  string att(std::string x, int *t, char n);
   //Inicia indicadores de posição e variaveis
   // char cc;
   // char nc;
@@ -98,11 +100,20 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   while(t != word.end()){
     //cc = word[i]; nc = word[i+1];
     //cout << "entrou " << cc << " ";
+    cout << "t antes do if: " << *t;
+    //cout << "\n cc: " << cc;
+    //Cout << "\n nc: " << nc;
     if(nc == cc && cc != 'S' && cc != 'R'){
+
+      //word[*t] = 'X';
       t += 1;
+      cout << "\n caiu primeiro ";
     } else {
-      cout << *t;
-      //word.at(*t) = "";
+      cout << "\n caiu segundo ";
+      //cout << "t: " << *t;
+      //word = att(word, *t, "S");
+      //cout << *t;
+      //word.at(2*t) = "";
       t += 1;
     }
   }
