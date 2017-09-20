@@ -450,10 +450,7 @@ string metaphone_single_br(string x, int maxCodeLen, bool traditional) {
       }
       break;
     case 'S':
-      //std::cout << pczin << nc << std::endl;
-      //std::cout << "cu";
       if( is(vowels,pczin) && is(vowels,nc) ){
-        //std::cout << 'caiu';
         meta += 'Z';
         i += 1;
       } else{
