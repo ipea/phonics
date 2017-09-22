@@ -16,6 +16,7 @@ using namespace std;
 #define cc         *t
 #define nc         *(t + 1)
 #define nnc        *(t + 2)
+#define nnnc       *(t + 3)
 //#define pc          lastChar
 #define NULLCHAR    (char)NULL
 #define pc         *(t - 1)
@@ -96,6 +97,7 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   /* 1 Regra: Tratamento para consoantes
    * Retira letras repetidas, que não forem dígrafos (RR e SS)
    */
+  cout << "entrou regra 1 \n";
   for (c = 0; c < word.length(); c++){
     if(nc == cc){
       word.replace(c,1,"");
@@ -103,11 +105,12 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
     } else t += 1;
   }
 
-  // 2 Regra: Letra S entre vogais (inclusive Y), troca por Z
+  // 2 Regra: Letra S entre vogais (inclusive Y), ou no final de palavras, troca por Z
   t = word.begin();
+  cout << "entrou regra 2 \n";
   for (c = 0; c < word.length(); c++){
     //cout << "cc " << cc;
-    if( cc == 'S' && is(vowels,pc) && is(vowels,nc) ){
+    if( (cc == 'S' && is(vowels,pc) && is(vowels,nc)) || (cc == 'S' && nc == ' ') || (cc == 'S' && !is(alpha,nc)) ){
       word.replace(c,1,"Z");
       t += 1;
     } else t += 1;
@@ -115,6 +118,7 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
 
   // 3 Regra: letra Y trocda por I
   t = word.begin();
+  cout << "entrou regra 3 \n";
   for (c = 0; c < word.length(); c++){
     if( cc == 'Y' ){
       word.replace(c,1,"I");
@@ -136,23 +140,34 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
    * obs: atualmente, todas as vogais seguidas de L são observadas
    * Necessário desenvolver método para identificar sílabas
    */
+  cout << "entrou regra 5 \n";
   t = word.begin();
   for(c = 0; c < word.length(); c++){
+    //cout << "cc: " << cc << "\n c: " << c << "\n";
     if( is(vowels,cc) && nc == 'L' ){
       word.replace(c+1,1,"U");
       t += 2;
+      c += 1;
     } else t += 1;
   }
 
   // 6 Regra: Dígrafos XS, KS, CS, CZ, KZ e XZ entre vogais substituídos por KIZ
   t = word.begin();
   for(c = 0; c < word.length(); c++){
-    cout << "cc: " << cc << "\n c: " << c << "\n";
-    //if( ((cc == 'X' || 'K' || 'C') && (nc == 'S' || 'Z')) && (is(vowels,pc)) && (is(vowels,nnc)) ){
-    if( ((cc == 'X' || cc == 'K' || cc == 'C') && (nc == 'S' || nc == 'Z')) ){
+    if( ((cc == 'X' || cc == 'K' || cc == 'C') && (nc == 'S' || nc == 'Z')) && (is(vowels,pc)) && (is(vowels,nnc)) ){
       word.replace(c,2,"KIZ");
-      t += 2;
-      c += 1;
+      t += 3;
+      c += 2;
+    } else t += 1;
+  }
+
+  // 7 Regra: Conjunção OEL, seguida de vogal ou ao final da palavra, troca por UEL
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( (cc=='O' && nc=='E' && nnc=='L' && is(vowels,nnnc)) || (cc=='O' && nc=='E' && nnc=='L' && nnnc==' ') || (cc=='O' && nc=='E' && nnc=='L' && !is(alpha,nnnc)) ){
+      word.replace(c,3,"UEL");
+      t += 3;
+      c += 2;
     } else t += 1;
   }
 
@@ -215,6 +230,7 @@ CharacterVector caixa(CharacterVector word, int maxCodeLen = 20){
     if(word[i] == NA_STRING){
       res[i] = NA_STRING;
     } else {
+      std::cout << "rodou " << std::endl;
       res[i] = caixa_single(Rcpp::as<std::string>(word[i]), maxCodeLen, true);
     }
   }
