@@ -27,20 +27,6 @@ bool is(std::string x, char c) {
   return (c != NULLCHAR && x.find_first_of(c) != std::string::npos);
 }
 
-// char at(std::string x, int i) {
-//
-//   try {
-//     return x.at(i);
-//   } catch(const std::out_of_range& e) {
-//     return NULLCHAR;
-//   }
-// }
-
-string att(std::string x, int *t, char n){
-  x[*t] = n;
-  return x;
-}
-
 string substr(std::string x, int i, int n) {
 
   try {
@@ -53,14 +39,8 @@ string substr(std::string x, int i, int n) {
 
 string caixa_single(string x, int maxCodeLen, bool traditional){
 
-  string att(std::string x, int *t, char n);
   //Inicia indicadores de posição e variaveis
-  // char cc;
-  // char nc;
-  // char nnc;
-  // char pc;
   string word = "";
-  //string meta = "";
   string::iterator t;
   int c;
 
@@ -79,9 +59,11 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   boost::trim(pre_word);
   boost::to_upper(pre_word);
 
-  for(t = pre_word.begin(); t != pre_word.end() && !isalpha(*t); t++);
+  //for(t = pre_word.begin(); t != pre_word.end() && !isalpha(*t); t++);
 
   //Corre todas as letras e retira itens estranhos
+  t = pre_word.begin();
+  //cout << "t: " << *t << "\n";
   while(word.length() < maxCodeLen && word.length() < pre_word.length()){
     if(is(alpha, cc)){
       word += cc;
@@ -90,15 +72,19 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   }
 
 
-  for(t = word.begin(); t != word.end() && !isalpha(*t); t++);
-
+  // cout << "t do for: " << *t << "\n";
+  // for(t = word.begin(); t != word.end() && !isalpha(*t); t++);
+  // cout << "t do for: " << *t << "\n";
 
   //Inicia sequenca de loops para cada regra
   /* 1 Regra: Tratamento para consoantes
    * Retira letras repetidas, que não forem dígrafos (RR e SS)
    */
-  cout << "entrou regra 1 \n";
+  //cout << word.length() << "\n";
+  t = word.begin();
+  //cout << "t: " << *t << "\n";
   for (c = 0; c < word.length(); c++){
+    //cout << "c: " << c << "\n";
     if(nc == cc){
       word.replace(c,1,"");
       t += 1;
@@ -107,7 +93,6 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
 
   // 2 Regra: Letra S entre vogais (inclusive Y), ou no final de palavras, troca por Z
   t = word.begin();
-  cout << "entrou regra 2 \n";
   for (c = 0; c < word.length(); c++){
     //cout << "cc " << cc;
     if( (cc == 'S' && is(vowels,pc) && is(vowels,nc)) || (cc == 'S' && nc == ' ') || (cc == 'S' && !is(alpha,nc)) ){
@@ -118,7 +103,6 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
 
   // 3 Regra: letra Y trocda por I
   t = word.begin();
-  cout << "entrou regra 3 \n";
   for (c = 0; c < word.length(); c++){
     if( cc == 'Y' ){
       word.replace(c,1,"I");
@@ -126,11 +110,10 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
     } else t += 1;
   }
 
-  // 4 Regra: Letra N ao final da palavra ou seguida de consoante, troca por M
+  // 4 Regra: Letra N ao final da palavra ou seguida de consoante (tirando o "H"), troca por M
   t = word.begin();
   for (c = 0; c < word.length(); c++){
-    if( (cc == 'N' && nc == ' ') || (cc == 'N' && !is(alpha,nc)) || (cc == 'N' && is(consonants,nc)) ){
-      cout << "caiu no if " << *word.end() << "\n";
+    if( ((cc == 'N' && nc == ' ') || (cc == 'N' && !is(alpha,nc)) || (cc == 'N' && is(consonants,nc))) && nc != 'H'){
       word.replace(c,1,"M");
       t += 1;
     } else t += 1;
@@ -140,10 +123,8 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
    * obs: atualmente, todas as vogais seguidas de L são observadas
    * Necessário desenvolver método para identificar sílabas
    */
-  cout << "entrou regra 5 \n";
   t = word.begin();
   for(c = 0; c < word.length(); c++){
-    //cout << "cc: " << cc << "\n c: " << c << "\n";
     if( is(vowels,cc) && nc == 'L' ){
       word.replace(c+1,1,"U");
       t += 2;
@@ -152,13 +133,23 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   }
 
   // 6 Regra: Dígrafos XS, KS, CS, CZ, KZ e XZ entre vogais substituídos por KIZ
+  /*
+   * ERRO: "nobertoxsa" funciona, "nobertoxsa nobertoxsa" funciona,
+   * mas "nobertoxsa nobertoxsa nobertoxsa" NÃO funciona.
+   */
   t = word.begin();
-  for(c = 0; c < word.length(); c++){
-    if( ((cc == 'X' || cc == 'K' || cc == 'C') && (nc == 'S' || nc == 'Z')) && (is(vowels,pc)) && (is(vowels,nnc)) ){
-      word.replace(c,2,"KIZ");
-      t += 3;
-      c += 2;
-    } else t += 1;
+  for(c = 0; c < word.length();c++){
+    if( cc == 'X' || cc == 'K' || cc == 'C' ){
+      if(nc == 'S' || nc == 'Z'){
+        if(is(vowels,pc) && is(vowels,nnc)){
+          word.replace(c,2,"KIZ");
+          t += 3;
+          c += 2;
+        }
+      }
+    } else{
+      t += 1;
+    }
   }
 
   // 7 Regra: Conjunção OEL, seguida de vogal ou ao final da palavra, troca por UEL
@@ -169,6 +160,37 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
       t += 3;
       c += 2;
     } else t += 1;
+  }
+
+  // 8 Regra: Dígrafo NH, seguido de vogal, troca por NI
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if(cc == 'N' && nc == 'H' && is(vowels,nnc)){
+      word.replace(c,2,"NI");
+      t += 2;
+      c += 1;
+    } else{
+      t += 1;
+      //c += 1;
+    }
+  }
+
+  // 9 Regra: Junção SCH seguido de vogal ou final da palavra, troca por X
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( (cc == 'S' && nc == 'C' && nnc == 'H' && is(vowels,nnnc)) || (cc == 'S' && nc == 'C' && nnc == 'H' && !is(alpha,nnnc)) ){
+      word.replace(c,3,"X");
+      t += 3;
+      c += 2;
+    } else {
+      t += 1;
+    }
+  }
+
+  // 10 Regra: Junção SC, seguido de E ou I no meio da palavra, troca por S
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if()
   }
 
 
@@ -230,7 +252,6 @@ CharacterVector caixa(CharacterVector word, int maxCodeLen = 20){
     if(word[i] == NA_STRING){
       res[i] = NA_STRING;
     } else {
-      std::cout << "rodou " << std::endl;
       res[i] = caixa_single(Rcpp::as<std::string>(word[i]), maxCodeLen, true);
     }
   }
