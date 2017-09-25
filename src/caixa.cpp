@@ -320,7 +320,9 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
     }
   }
 
-  // 19 Regra: C seguido de qlqr letra que nao E ou I, troca por K, se seguido de E ou I, troca por S
+  /* 19 Regra: C seguido de qlqr letra que nao E ou I, troca por K, se seguido de E ou I, troca por S
+   * Observação: A regra 25 pede para trocar CK por K. Vou incluir uma excessão à regra 19 para ela.
+   */
   t = word.begin();
   for(c = 0; c < word.length(); c++){
     if( cc == 'C' ){
@@ -328,8 +330,12 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
         word.replace(c,1,"S");
         t += 1;
       } else {
-        word.replace(c,1,"K");
-        t += 1;
+        if( nc != 'K' ){
+          word.replace(c,1,"K");
+          t += 1;
+        } else{
+          t += 1;
+        }
       }
     } else {
       t += 1;
@@ -409,6 +415,35 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
       t += 1;
     }
   }
+
+  // 24 Regra: letra E seguida de qualquer consoante ao final da palavra, é substituida por I.
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'E' && is(consonants,nc) && (nnc == ' ' || !is(alpha,nnc)) ){
+      word.replace(c,1,"I");
+      t += 1;
+    } else {
+      t += 1;
+    }
+  }
+
+  /* 25 Regra: CK troca por K
+   * Observação: a regra 19 diz que C seguido dequalquer letra que nao E ou I, troca por K.
+   * CK cai dentro desta regra. Vou incluir uma excessão na regra 19 para isso.
+   */
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'C' && nc == 'K' ){
+      word.replace(c,2,"K");
+      cout << " c: " << c << "\n";
+      t += 2;
+      c += 1;
+    } else {
+      t += 1;
+    }
+  }
+
+  // 26 Regra:
 
 
 
