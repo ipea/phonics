@@ -42,6 +42,7 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   //Inicia indicadores de posição e variaveis
   string word = "";
   string::iterator t;
+  string temp = "";
   int c;
 
   //Inicia constantes utilizadas
@@ -121,11 +122,13 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
 
   /* 5 Regra: Vogal seguida de L na mesma silaba, troca L por U
    * obs: atualmente, todas as vogais seguidas de L são observadas
-   * Necessário desenvolver método para identificar sílabas
+   * Necessário desenvolver método para identificar sílabas.
+   * Palavras como Seilandia, será traduzida erroneamente.
+   * Para que a Regra 13 funcione, vou adicionar uma regra de nnc != H
    */
   t = word.begin();
   for(c = 0; c < word.length(); c++){
-    if( is(vowels,cc) && nc == 'L' ){
+    if( is(vowels,cc) && nc == 'L' && nnc != 'H'){
       word.replace(c+1,1,"U");
       t += 2;
       c += 1;
@@ -190,8 +193,176 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
   // 10 Regra: Junção SC, seguido de E ou I no meio da palavra, troca por S
   t = word.begin();
   for(c = 0; c < word.length(); c++){
-    if()
+    if( cc == 'S' && nc == 'C' && is("EI",nnc) ){
+      word.replace(c,2,"S");
+      t += 2;
+      c += 1;
+    } else {
+      t += 1;
+    }
   }
+
+  // 11 Regra: Junção ICT seguida de vogal, troca por IT
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'I' && nc == 'C' && nnc == 'T' && is(vowels,nnnc) ){
+      word.replace(c,3,"IT");
+      t += 3;
+      c += 2;
+    } else{
+      t += 1;
+    }
+  }
+
+  // 12 Regra: Junção CH no final de palavra, troca por K, no meio da palavra, troca por X
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if ( cc == 'C' && nc == 'H' ){
+      if ( nnc == ' ' || !is(alpha,nnc) ){
+        word.replace(c,2,"K");
+        t += 2;
+        c += 1;
+      } else {
+        word.replace(c,2,"X");
+        t += 2;
+        c += 1;
+      }
+    } else{
+      t += 1;
+    }
+  }
+
+  // 13 Regra: LH seguido de vogal, troca por LI
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'L' && nc == 'H' && is(vowels,nnc) ){
+      word.replace(c,2,"LI");
+      t += 2;
+      c += 1;
+    } else{
+      t += 1;
+    }
+  }
+
+  // 14 Regra: DTH troca por DTI
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'D' && nc == 'T' && nnc == 'H' ){
+      word.replace(c,3,"DTI");
+      t += 3;
+      c += 2;
+    } else {
+      t += 1;
+    }
+  }
+
+  // 15 Regra: TH no final de palavra, troca por TI, se seguido por vogal, troca por T
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'T' && nc == 'H' ){
+      if( nnc == ' ' || !is(alpha,nnc) ){
+        word.replace(c,2,"TI");
+        t += 2;
+        c += 1;
+      } else{
+        if( is(vowels,nnc) ){
+          word.replace(c,2,"T");
+          t += 2;
+          c += 1;
+        }
+      }
+    } else{
+      t += 1;
+    }
+  }
+
+  // 16 Regra: Letra G seguida de E ou I, troca por J
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'G' && is("EI",nc) ){
+      word.replace(c,1,"J");
+      t += 2;
+      c += 1;
+    } else{
+      t += 1;
+    }
+  }
+
+  // 17 Regra: GU se seguido por E ou I, troca por G
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'G' && nc == 'U' && is("EI",nnc) ){
+      word.replace(c,2,"G");
+      t += 2;
+      c += 1;
+    } else {
+      t += 1;
+    }
+  }
+
+  // 18 Regra: QU seguido de A ou O, troca por KU, se seguido de E ou I, troca por K
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'Q' && nc == 'U' ){
+      if( nnc == 'A' || nnc == 'O' ){
+        word.replace(c,2,"KU");
+        t += 2;
+        c += 1;
+      } else{
+        if( nnc == 'E' || nnc == 'I' ){
+          word.replace(c,2,"K");
+          t += 2;
+          c += 1;
+        }
+      }
+    } else {
+      t += 1;
+    }
+  }
+
+  // 19 Regra: C seguido de qlqr letra que nao E ou I, troca por K, se seguido de E ou I, troca por S
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'C' ){
+      if( is("EI",nc) ){
+        word.replace(c,1,"S");
+        t += 1;
+      } else {
+        word.replace(c,1,"K");
+        t += 1;
+      }
+    } else {
+      t += 1;
+    }
+  }
+
+  // 20 Regra: A letra H, caso nao fizer parte dos digrafos NH, CH ou LH, será suprimida
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'H' && pc != 'N' && pc != 'C' && pc != 'L' ){
+      word.replace(c,1,"");
+      t += 1;
+    } else{
+      t += 1;
+    }
+  }
+
+  // 21 Regra: Letras D, F, P, B e T seguidas de consoantes ou final das palavras, mantem e acresce o I
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( (is("DFPBT",cc) && is(consonants,nc)) || (is("DFPBT",cc) && (nc == ' ' || !is(alpha,nc))) ){
+      temp = word[c];
+      temp.append("I");
+      word.replace(c,1,temp);
+      t += 2;
+      c += 1;
+    } else {
+      t += 1;
+    }
+  }
+
+  // 22 Regra:
+
 
 
   // /Users/Igor/OneDrive/Documents/IPEA/git/phonics/src/caixa.cpp
