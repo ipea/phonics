@@ -347,7 +347,9 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
     }
   }
 
-  // 21 Regra: Letras D, F, P, B e T seguidas de consoantes ou final das palavras, mantem e acresce o I
+  /* 21 Regra: Letras D, F, P, B e T seguidas de consoantes ou final das palavras, mantem e acresce o I
+   * Vai uma consideração: A palavra EMPRESA cai nessa regra (EMPIREZA) mas nao me parece correto...
+   */
   t = word.begin();
   for(c = 0; c < word.length(); c++){
     if( (is("DFPBT",cc) && is(consonants,nc)) || (is("DFPBT",cc) && (nc == ' ' || !is(alpha,nc))) ){
@@ -361,7 +363,53 @@ string caixa_single(string x, int maxCodeLen, bool traditional){
     }
   }
 
-  // 22 Regra:
+  // 22 Regra: X ao final das palavras, troca por KIZ, se depois de uma vogal, NA MESMA SILABA, TROCA POR Z
+  /* Mesmo problema da Regra 5.
+   * Necessário identificar silabas!
+   */
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'X' ){
+      if( nc == ' ' || !is(alpha,nc) ){
+        word.replace(c,1,"KIZ");
+        t += 1;
+      }
+      // else{
+      //   if( is(vowels,pc) ){
+      //     word.replace(c,1,"Z");
+      //     t += 1;
+      //   }
+      // }
+    } else{
+      t += 1;
+    }
+  }
+
+  /* 23 Regra: ES no inicio ou meio da palavra NA MESMA SILABA, e seguida de uma consoante, troca por IS
+   * Se seguido de vogal ou branco, troca por IZ (no entanto, a Regra 2 diz que S entre vogais ou no final de palavras,
+   * troca por Z, então nao acho que essa regra vai cair alguma vez.)
+   */
+  t = word.begin();
+  for(c = 0; c < word.length(); c++){
+    if( cc == 'E' && nc == 'S' ){
+      if( is(vowels,nnc) || nnc == ' ' || !is(alpha,nnc) ){
+        word.replace(c,2,"IZ");
+        t += 2;
+        c += 1;
+      }
+      // else{
+      //   if( !is(alpha,pc) || pc == ' ' ){
+      //     //adicionar regra para mesma silaba
+      //     word.replace(c,2,"IS");
+      //     t += 2;
+      //     c += 1;
+      //   }
+      // }
+    } else{
+      t += 1;
+    }
+  }
+
 
 
 
